@@ -1,0 +1,45 @@
+<html>
+    <head></head>
+    <script src="jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var querying = false;
+            
+            function doAjax(cancelInterval) {
+                $.ajax({
+                    url : '/DoQuery',
+                    data : {
+                    },
+                    dataType : "json",
+                    success : function(data) {
+                        if(data.last)
+                            cancelInterval();
+                        var str = data.result;
+                        $("#msg").html($("#msg").html()+ " " + str);
+                        querying = false;
+                    }
+                });
+            }
+            
+            $("#seriesBtn").on("click", function() {
+                if(!querying) {
+                    var poller = setInterval(function(){
+                        if(!querying) {
+                            querying = true;
+                            doAjax(function(){
+                                clearInterval(poller);
+                            });
+                        }
+                    }, 400);
+                }
+                else {
+                    
+                }
+            });
+        });
+    </script>
+    <body>
+    <input type="button" id="seriesBtn" value="Do series" />
+    <div id="msg"></div>    
+    </body>
+</html>

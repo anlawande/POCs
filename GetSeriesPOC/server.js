@@ -17,7 +17,6 @@ app.get("/DoQuery", function(req, res){
     var sessionId = req.session.id;
     
     if(req.session.querying === undefined) {
-        //TODO Consolidate all into querying object so it can be dumped all at once
         req.session.querying = true;
         sessionMap[sessionId] = {
             "arrResults" : [],
@@ -29,7 +28,6 @@ app.get("/DoQuery", function(req, res){
         
         sessionEvent.on("requestCompleted", function(resultObj){
             //TODO Populate result
-            //TODO Check for last
             sessionMap[sessionId].arrResults.push(resultObj);                        //Lock point
             sessionEvent.emit("sessionnotify");
         });
@@ -84,12 +82,11 @@ app.listen(port, function(){
 
 function requester(callback) {
     
-    var arr = ["http://google.com&q=maps&start=0", "http://google.com&q=maps&start=10", "http://google.com&q=maps&start=20"];
+    var arr = ["http://google.com&q=maps&start=0", "http://google.com&q=maps&start=10", "http://google.com&q=maps&start=20", "http://google.com&q=maps&start=30"];
     
     for(var i = 0; i < arr.length; i++) {
         request(arr[i], function(err, resp, body) {
             var result = "Hello" + Math.floor(Math.random()*100);
-            console.log(result);
             callback(result, arr.length);
         });
     }

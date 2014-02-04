@@ -4,7 +4,7 @@ function Trie() {
     this.trie = {};
 }
 
-Trie.prototype.add = function(word) {
+Trie.prototype.add = function(word, item) {
     var lword = word.toLowerCase();
     var current = this.trie;
     for(var a = 0; a < lword.length ; a++) {
@@ -12,7 +12,9 @@ Trie.prototype.add = function(word) {
             current[lword[a]] = {};
         current = current[lword[a]];
     }
-    current[LEAFIND] = word;
+    current[LEAFIND] = current[LEAFIND] || [];
+    var toPush = item || word;
+    current[LEAFIND].push(toPush);
 }
 
 Trie.prototype.lookup = function(word) {
@@ -34,11 +36,17 @@ function getAllLeaves(node, results) {
     for(var a in node) {
         if(node.hasOwnProperty(a)) {
             if(a === LEAFIND)
-                results.push(node[a]);
+                flattenAndPush(node[a], results);
             else
                 getAllLeaves(node[a], results);
         }
     }
+}
+
+function flattenAndPush(arr, results) {
+    var arrlength = arr.length;
+    for(var i = 0; i < arrlength; i++)
+        results.push(arr[i]);
 }
 
 Trie.prototype.wipe = function() {

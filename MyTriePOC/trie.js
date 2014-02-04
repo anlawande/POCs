@@ -1,3 +1,13 @@
+/**
+    Custom trie implementation - Supports multiple entries and anything as leaves
+    
+    -- add -- (key{text}, item{anything}[optional])  //If item not present, key itself will be leaf
+    --lookup -- (partial{text})
+    -- dumpJsonStr -- ()
+    -- wipe -- ()
+    
+    Author : Aniket Lawande
+**/
 var LEAFIND = "$";
 
 function Trie() {
@@ -5,6 +15,8 @@ function Trie() {
 }
 
 Trie.prototype.add = function(word, item) {
+    if (word === undefined || word === null || word === "")
+        return;
     var lword = word.toLowerCase();
     var current = this.trie;
     for(var a = 0; a < lword.length ; a++) {
@@ -19,6 +31,9 @@ Trie.prototype.add = function(word, item) {
 
 Trie.prototype.lookup = function(word) {
     var results = [];
+    if(word === undefined || word === null || word === "")
+        return results;
+    
     var lword = word.toLowerCase();
     var current = this.trie;
     for(var a = 0; a < lword.length; a++) {

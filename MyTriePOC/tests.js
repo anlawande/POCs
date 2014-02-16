@@ -51,5 +51,12 @@ describe('Adding to tries', function(){
             assert.equal(20, trie.lookup("number")[0]);
             assert.equal(40, trie.lookup("myobj")[0]["cust"]);
         });
+        
+        it('should retrieve top n entries', function(){
+            assert.equal(5, trie.top(5).length);
+            assert.equal(2, trie.top(2).length);
+            assert.equal(trie.count, trie.top(trie.count).length);
+            assert.equal(trie.count, trie.top(trie.count+2).length);
+        });
     });
 });

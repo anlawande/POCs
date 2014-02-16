@@ -27,6 +27,12 @@ describe('Adding to tries', function(){
             trie.add("number", 20);
             trie.add("myobj", {"cust" : 40});
         });
+        
+        it('should add in a chain', function(){
+            trie
+                .add("MyFirstTrie")
+                .add("MySecondTrie");
+        });
     });
     
     describe('Retrieving values', function(){

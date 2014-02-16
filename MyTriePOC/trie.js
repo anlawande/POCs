@@ -29,6 +29,8 @@ Trie.prototype.add = function(word, item) {
     var toPush = item || word;
     current[LEAFIND].push(toPush);
     this.count++;
+    
+    return this;
 }
 
 Trie.prototype.lookup = function(word) {
@@ -86,6 +88,8 @@ Trie.prototype.wipe = function() {
     delete this.trie;
     this.trie = {};
     this.count = 0;
+    
+    return this;
 }
 
 Trie.prototype.dumpJsonStr = function() {

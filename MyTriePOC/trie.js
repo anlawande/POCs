@@ -85,6 +85,7 @@ function flattenAndPush(arr, results, max) {
 Trie.prototype.wipe = function() {
     delete this.trie;
     this.trie = {};
+    this.count = 0;
 }
 
 Trie.prototype.dumpJsonStr = function() {

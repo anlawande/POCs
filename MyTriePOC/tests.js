@@ -59,4 +59,12 @@ describe('Adding to tries', function(){
             assert.equal(trie.count, trie.top(trie.count+2).length);
         });
     });
+    
+    describe('Reomving values', function(){
+        it('should wipe the trie properly', function(){
+            trie.wipe();
+            assert.equal(0, trie.count);
+            assert.equal(0, trie.lookup("json"));
+        });
+    });
 });

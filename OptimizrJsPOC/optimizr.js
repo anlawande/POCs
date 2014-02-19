@@ -61,9 +61,13 @@ optimizr.prototype.run = function () {
             
         task.taskFn.apply(taskParam);
     }
+    
+    optimizr.reportResults(this.tasks);
+};
 
-    // Collect results
-    for (var i = 0; i < this.tasks.length; i++) {
+optimizr.prototype.reportResults = function(tasks) {
+    
+    for (var i = 0; i < tasks.length; i++) {
 
         var task = this.tasks[i];
 
@@ -72,6 +76,7 @@ optimizr.prototype.run = function () {
             
             var $ = cheerio.load(fs.readFileSync(optimizrHTMLTemplate), {encoding : 'etf-8'});
             
+            var statusColor;
             var cardTemplate = $(".card");
             var newCard = cardTemplate.clone();
             newCard.css('display', 'block');
@@ -83,7 +88,12 @@ optimizr.prototype.run = function () {
             
             for(var j = 0; j < results.length; j++) {
                 tbody.append("<tr><td>" + results[j].file + "</td><td>" + results[j].msg + "</td></tr>");
+                
+                statusColor = (results[i].code === "warn") ? 'gold' : 'red';
+                tbody.children().last().children().first().css('border-left-color', statusColor);
             }
+            
+            newCard.css("border-left-color", statusColor);
             
             var explanation = (typeof task.explanation === "function") ? "No explanation provided" : task.explanation;
             var suggestion = (typeof task.suggestion === "function") ? "No suggestion provided" : task.suggestion;
@@ -94,7 +104,7 @@ optimizr.prototype.run = function () {
             fs.writeFileSync(optimizrReport, $.html());
         }
     }
-};
+}
 
 optimizr.prototype.expand = function (pattern, options) {
 

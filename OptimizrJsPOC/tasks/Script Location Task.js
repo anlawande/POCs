@@ -5,6 +5,8 @@ var task = optimizr.newTask();
 
 task.name("HTML scripts location");
 task.debug("Checking if HTML files contain scripts before body tags");
+task.explanation("When a browser encounters a script element, it delays fetching of other resources");
+task.suggestion("Move script elements to the end of the body");
 task.taskFn(function () {
 
     var files = optimizr.expand("../**/*.html", {

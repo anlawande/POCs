@@ -3,19 +3,40 @@ var glob = require("glob");
 var fs = require("fs");
 
 var optimizrHTMLTemplate = "./OptimizrReportTemplate.html";
-var optimizrReport = "./Optimizr Report.html"
+var optimizrReport = "./Report.html"
 
 function optimizr() {
     this.tasks = [];
 }
 
-optimizr.prototype.registerTask = function (taskName, taskDesc, taskFn) {
-    this.tasks.push({
-        "TaskName": taskName,
-        "TaskDesc": taskDesc,
-        "TaskFn": taskFn,
-        "taskObj" : new taskObj()
-    });
+function taskObj(){
+}
+
+taskObj.prototype.name = function(val){
+    this.name = val;
+}
+taskObj.prototype.debug = function(val){
+    this.debug = val;
+}
+taskObj.prototype.description = function(val){
+    this.description = val;
+}
+taskObj.prototype.explanation = function(val){
+    this.explanation = val;
+}
+taskObj.prototype.suggestion = function(val){
+    this.suggestion = val;
+}
+taskObj.prototype.taskFn = function(val){
+    this.taskFn = val;
+}
+
+optimizr.prototype.newTask = function(){
+    return new taskObj();
+};
+
+optimizr.prototype.registerTask = function (task) {
+    this.tasks.push(task);
 };
 
 optimizr.prototype.run = function () {
@@ -24,11 +45,16 @@ optimizr.prototype.run = function () {
 
         var task = this.tasks[i];
 
+        task.taskResultObj = new taskResultObj();
+        
         var taskParam = {
-            "task": task.taskObj
+            "task":  task.taskResultObj
         };
 
-        task.TaskFn.apply(taskParam);
+        if(task.debug)
+            console.log(task.debug);
+            
+        task.taskFn.apply(taskParam);
     }
 
     // Collect results
@@ -36,12 +62,13 @@ optimizr.prototype.run = function () {
 
         var task = this.tasks[i];
 
-        if (task.taskObj.status === "Failed") {
-            console.log("Task " + task.TaskName + " failed");
+        if (task.taskResultObj.status === "Failed") {
+            console.log("Task " + task.name + " failed");
             var $ = cheerio.load(fs.readFileSync(optimizrHTMLTemplate), {encoding : 'etf-8'});
             var cardTemplate = $(".card");
             var newCard = cardTemplate.clone();
-            newCard.find(".cardTitle").html(task.TaskName);
+            newCard.css('display', 'block');
+            newCard.find(".cardTitle").html(task.name);
             $(".mainCont").append(newCard);
             fs.writeFileSync(optimizrReport, $.html());
         }
@@ -61,24 +88,26 @@ optimizr.prototype.expand = function (pattern, options) {
     return files;
 }
 
-function taskObj() {
+function taskResultObj() {
     this.results = [];
     this.status = "Off";
 }
 
-taskObj.prototype.addResult = function (resultObj) {
+taskResultObj.prototype.addResult = function (resultObj) {
     this.results.push(resultObj);
 };
 
-taskObj.prototype.failure = function () {
+taskResultObj.prototype.failure = function () {
     this.status = "Failed";
 };
 
 optimizr = new optimizr();
 
-// A very basic default task.
-optimizr.registerTask('HTML scripts location', 'Checking if HTML files contain scripts before body tags', function () {
-    console.log('Checking if HTML files contain scripts before body tags...');
+var task = optimizr.newTask();
+
+task.name = "HTML scripts location";
+task.debug = "Checking if HTML files contain scripts before body tags";
+task.taskFn = function () {
 
     var files = optimizr.expand("../**/*.html", {
         filter: function (val) {
@@ -108,6 +137,8 @@ optimizr.registerTask('HTML scripts location', 'Checking if HTML files contain s
 
         this.task.failure();
     }
-});
+}
+
+optimizr.registerTask(task);
 
 optimizr.run();

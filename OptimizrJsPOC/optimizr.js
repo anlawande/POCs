@@ -29,6 +29,7 @@ taskObj.prototype.suggestion = function(val){
 }
 taskObj.prototype.taskFn = function(val){
     this.taskFn = val;
+    this.taskFnSet = true;
 }
 
 optimizr.prototype.newTask = function(){
@@ -45,13 +46,17 @@ optimizr.prototype.run = function () {
 
         var task = this.tasks[i];
 
+        if(!task.taskFnSet) {
+            console.log("Task " + task.name + " doesn't have a task function. Please add one by calling task.taskFn(yourtaskFn)");
+        }
+        
         task.taskResultObj = new taskResultObj();
         
         var taskParam = {
             "task":  task.taskResultObj
         };
 
-        if(task.debug)
+        if(typeof task.debug !== "function")
             console.log(task.debug);
             
         task.taskFn.apply(taskParam);
@@ -64,11 +69,27 @@ optimizr.prototype.run = function () {
 
         if (task.taskResultObj.status === "Failed") {
             console.log("Task " + task.name + " failed");
+            
             var $ = cheerio.load(fs.readFileSync(optimizrHTMLTemplate), {encoding : 'etf-8'});
+            
             var cardTemplate = $(".card");
             var newCard = cardTemplate.clone();
             newCard.css('display', 'block');
+            
             newCard.find(".cardTitle").html(task.name);
+            
+            var tbody = newCard.find(".resultsTable tbody");
+            var results = task.taskResultObj.results;
+            
+            for(var j = 0; j < results.length; j++) {
+                tbody.append("<tr><td>" + results[j].file + "</td><td>" + results[j].msg + "</td></tr>");
+            }
+            
+            var explanation = (typeof task.explanation === "function") ? "No explanation provided" : task.explanation;
+            var suggestion = (typeof task.suggestion === "function") ? "No suggestion provided" : task.suggestion;
+            newCard.find(".explanation").html(explanation);
+            newCard.find(".suggestion").html(suggestion);
+            
             $(".mainCont").append(newCard);
             fs.writeFileSync(optimizrReport, $.html());
         }
@@ -97,6 +118,10 @@ taskResultObj.prototype.addResult = function (resultObj) {
     this.results.push(resultObj);
 };
 
+taskResultObj.prototype.success = function () {
+    this.status = "Succeeded";
+};
+
 taskResultObj.prototype.failure = function () {
     this.status = "Failed";
 };
@@ -105,9 +130,9 @@ optimizr = new optimizr();
 
 var task = optimizr.newTask();
 
-task.name = "HTML scripts location";
-task.debug = "Checking if HTML files contain scripts before body tags";
-task.taskFn = function () {
+task.name("HTML scripts location");
+task.debug("Checking if HTML files contain scripts before body tags");
+task.taskFn(function () {
 
     var files = optimizr.expand("../**/*.html", {
         filter: function (val) {
@@ -130,14 +155,15 @@ task.taskFn = function () {
 
         if (scriptsPresentBeforeBody) {
             this.task.addResult({
-                code: "warn",
-                msg: "HTML file [" + file + "]: Scripts present before body tag. This may cause delay of loading of pages"
+                "file" : file,
+                "code": "warn",
+                "msg": "HTML file : Scripts present before body tag. This may cause delay of loading of pages"
             });
         }
 
         this.task.failure();
     }
-}
+});
 
 optimizr.registerTask(task);
 

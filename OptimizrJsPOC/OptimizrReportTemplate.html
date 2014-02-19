@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Optimzr Report</title>
-    <style type="text/css">
-        body {
-            padding: 0px;
-            margin: 0px;
-        }
+    <head>
+        <title>Optimizr Report</title>
+        <style type="text/css">
+            body {
+                padding: 0px;
+                margin: 0px;
+            }
 
-        .banner {
-            height: 150px;
-            background-color: rgb(186, 233, 255);
-            box-shadow: 0px 3px 10px rgba(0,0,0,0.3);
-            border-left: 10px solid rgb(136, 185, 194);
-            margin-bottom: 20px;
-        }
+            .banner {
+                height: 150px;
+                background-color: rgb(186, 233, 255);
+                box-shadow: 0px 3px 10px rgba(0,0,0,0.3);
+                border-left: 10px solid rgb(136, 185, 194);
+                margin-bottom: 20px;
+            }
 
             .banner .bannerTitle {
                 height: 100%;
@@ -33,27 +33,28 @@
                 top: 0;
             }
 
-        .progressInd {
-            height: 10px;
-            background-color: red;
-            margin: 0 100px;
-        }
+            .progressInd {
+                height: 10px;
+                background-color: red;
+                margin: 0 100px;
+            }
 
-        .card {
-            font-family: 'century gothic', 'helvetica';
-            font-size: 14px;
-            margin: 20px 50px;
-            border-style: solid;
-            border-color: rgb(236,236,236);
-            border-width: 1px 1px 1px 10px;
-            box-shadow: -2px 3px 10px rgba(0,0,0,0.2);
-            border-radius: 5px;
-            padding : 5px;
-            display: none;
-        }
+            .card {
+                font-family: 'century gothic', 'helvetica';
+                font-size: 14px;
+                margin: 20px 50px;
+                border-style: solid;
+                border-color: rgb(236,236,236);
+                border-width: 1px 1px 1px 10px;
+                box-shadow: -2px 3px 10px rgba(0,0,0,0.2);
+                border-radius: 5px;
+                padding : 5px;
+                display: none;
+            }
 
             .card .cardHeader {
                 border-bottom: 1px solid rgb(221, 221, 221);
+                padding-left: 20px;
             }
 
             .card .cardTitle {
@@ -64,74 +65,93 @@
                 margin : 15px;
             }
 
-        .cardBody .resultsCont {
-            width: 60%;
-            float: left;
-        }
+            .cardBody .resultsCont {
+                width: 60%;
+                float: left;
+                padding: 5px;
+                background-color: rgb(236, 236, 236);
+            }
 
-        .resultsCont .resultsTable{
-            width: 100%;
-        }
+            .resultsCont .resultsTable{
+                width: 100%;
+            }
 
-        .resultsTable > thead > tr {
-            background-color: rgb(223, 220, 220);
-        }
+            .resultsTable > thead > tr {
+                background-color: rgb(255, 229, 229);
+            }
 
-        .resultsTable th, td {
-            padding: 5px;
-        }
+            .resultsTable th, td {
+                padding: 5px;
+            }
 
-        .resultsTable > thead th:nth-child(1) {
-            width : 30%;
-        }
+            .resultsTable > thead th:nth-child(1) {
+                width : 30%;
+            }
 
-        .cardBody .explanation {
-            width: 30%;
-            float: right;
-            background-color: rgb(255, 238, 182);
-            padding: 10px;
-        }
+            .resultsTable > tbody {
+                font-family: monospace;
+                font-size: 12px;
+            }
+            
+            .resultsTable > tbody > tr:nth-child(odd) {
+                background-color: rgb(255, 255, 255);              
+            }
+            
+            .resultsTable > tbody > tr:nth-child(even) {
+                background-color: rgb(248, 248, 248);           
+            }
+            
+            .resultsTable  tr > td:nth-child(n+2) {
+                border-right: 1px solid rgb(221, 221, 221);
+            }
 
-        .cardBody .suggestion{
-            margin-top: 10px;
-            clear :both;
-            padding: 10px;
-            background-color: rgb(231, 244, 255);
-        }
+            .cardBody .explanation {
+                width: 30%;
+                float: right;
+                background-color: rgb(236, 236, 236);
+                padding: 10px;
+            }
 
-        .cardBody .clear {
-            clear : both;
-        }
-    </style>
-</head>
-<body>
-    <div class="banner">
-        <div class="bannerTitle">
-            <span class="bannerTitleCont">Optimzr Report</span>
-        </div>
-    </div>
-    <div class="mainCont">
-        <div class="progressInd"></div>
+            .cardBody .suggestion{
+                margin-top: 10px;
+                clear :both;
+                padding: 10px;
+                background-color: rgb(255, 244, 208);
+            }
 
-        <div class="card">
-            <div class="cardHeader">
-                <div class="cardTitle">Sample card title</div>
+            .cardBody .clear {
+                clear : both;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="banner">
+            <div class="bannerTitle">
+                <span class="bannerTitleCont">Optimizr Report</span>
             </div>
-            <div class="cardBody">
-                <div class="resultsCont">
-                    <table class="resultsTable" cellspacing="0" cellpadding="0">
-                        <thead>
-                            <tr><th>File name</th><th>Message</th></tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+        </div>
+        <div class="mainCont">
+            <div class="progressInd"></div>
+
+            <div class="card">
+                <div class="cardHeader">
+                    <div class="cardTitle">Sample card title</div>
                 </div>
-                <div class="explanation">Some sample explanation content here</div>
-                <div class="clear"></div>
-                <div class="suggestion">Some sample explanation content here</div>
+                <div class="cardBody">
+                    <div class="resultsCont">
+                        <table class="resultsTable" cellspacing="0" cellpadding="0">
+                            <thead>
+                                <tr><th>File name</th><th>Message</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="explanation">Some sample explanation content here</div>
+                    <div class="clear"></div>
+                    <div class="suggestion">Some sample explanation content here</div>
+                </div>
             </div>
-        </div>
 
-    </div>
-</body>
+        </div>
+    </body>
 </html>

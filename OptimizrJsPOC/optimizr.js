@@ -1,6 +1,21 @@
 var cheerio = require("cheerio");
 var glob = require("glob");
 var fs = require("fs");
+var colors = require("colors");
+
+colors.setTheme({
+    silly: 'rainbow',
+    input: 'grey',
+    verbose: 'cyan',
+    prompt: 'grey',
+    info: 'green',
+    data: 'grey',
+    help: 'cyan',
+    warn: 'yellow',
+    debug: 'blue',
+    error: 'red',
+    success : 'green'
+});
 
 var optimizrHTMLTemplate = "./OptimizrReportTemplate.html";
 var optimizrReport = "./Report.html"
@@ -57,9 +72,17 @@ optimizr.prototype.run = function () {
         };
 
         if (typeof task.debug !== "function")
-            console.log(task.debug);
+            process.stdout.write(task.debug + "...");
 
         task.taskFn.apply(taskParam);
+
+        if (task.taskResultObj.status === "Succeeded")
+            process.stdout.write("OK".success);
+        
+        if (task.taskResultObj.status === "Failed")
+            process.stdout.write("Failed".error);
+        
+        process.stdout.write("\r\n");
     }
 
     optimizr.reportResults(this.tasks);
@@ -73,9 +96,9 @@ optimizr.prototype.reportResults = function (tasks) {
     for (var i = 0; i < tasks.length; i++) {
 
         var task = this.tasks[i];
-        
+
         var statusColor;
-        
+
         var newCard = cardTemplate.clone();
         newCard.css('display', 'block');
 
@@ -106,7 +129,7 @@ optimizr.prototype.reportResults = function (tasks) {
         newCard.find(".suggestion").html(suggestion);
 
         $(".mainCont").append(newCard);
-        
+
     }
 
     fs.writeFileSync(optimizrReport, $.html());

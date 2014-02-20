@@ -9,30 +9,30 @@ function optimizr() {
     this.tasks = [];
 }
 
-function taskObj(){
+function taskObj() {
 }
 
-taskObj.prototype.name = function(val){
+taskObj.prototype.name = function (val) {
     this.name = val;
 }
-taskObj.prototype.debug = function(val){
+taskObj.prototype.debug = function (val) {
     this.debug = val;
 }
-taskObj.prototype.description = function(val){
+taskObj.prototype.description = function (val) {
     this.description = val;
 }
-taskObj.prototype.explanation = function(val){
+taskObj.prototype.explanation = function (val) {
     this.explanation = val;
 }
-taskObj.prototype.suggestion = function(val){
+taskObj.prototype.suggestion = function (val) {
     this.suggestion = val;
 }
-taskObj.prototype.taskFn = function(val){
+taskObj.prototype.taskFn = function (val) {
     this.taskFn = val;
     this.taskFnSet = true;
 }
 
-optimizr.prototype.newTask = function(){
+optimizr.prototype.newTask = function () {
     return new taskObj();
 };
 
@@ -46,64 +46,70 @@ optimizr.prototype.run = function () {
 
         var task = this.tasks[i];
 
-        if(!task.taskFnSet) {
+        if (!task.taskFnSet) {
             console.log("Task " + task.name + " doesn't have a task function. Please add one by calling task.taskFn(yourtaskFn)");
         }
-        
+
         task.taskResultObj = new taskResultObj();
-        
+
         var taskParam = {
-            "task":  task.taskResultObj
+            "task": task.taskResultObj
         };
 
-        if(typeof task.debug !== "function")
+        if (typeof task.debug !== "function")
             console.log(task.debug);
-            
+
         task.taskFn.apply(taskParam);
     }
-    
+
     optimizr.reportResults(this.tasks);
 };
 
-optimizr.prototype.reportResults = function(tasks) {
-    
+optimizr.prototype.reportResults = function (tasks) {
+
+    var $ = cheerio.load(fs.readFileSync(optimizrHTMLTemplate), { encoding: 'etf-8' });
+    var cardTemplate = $(".card");
+
     for (var i = 0; i < tasks.length; i++) {
 
         var task = this.tasks[i];
+        
+        var statusColor;
+        
+        var newCard = cardTemplate.clone();
+        newCard.css('display', 'block');
+
+        newCard.find(".cardTitle").html(task.name);
 
         if (task.taskResultObj.status === "Failed") {
-            console.log("Task " + task.name + " failed");
-            
-            var $ = cheerio.load(fs.readFileSync(optimizrHTMLTemplate), {encoding : 'etf-8'});
-            
-            var statusColor;
-            var cardTemplate = $(".card");
-            var newCard = cardTemplate.clone();
-            newCard.css('display', 'block');
-            
-            newCard.find(".cardTitle").html(task.name);
-            
             var tbody = newCard.find(".resultsTable tbody");
             var results = task.taskResultObj.results;
-            
-            for(var j = 0; j < results.length; j++) {
+
+            for (var j = 0; j < results.length; j++) {
                 tbody.append("<tr><td>" + results[j].file + "</td><td>" + results[j].msg + "</td></tr>");
-                
+
                 statusColor = (results[i].code === "warn") ? 'gold' : 'red';
                 tbody.children().last().children().first().css('border-left-color', statusColor);
             }
-            
+
             newCard.css("border-left-color", statusColor);
-            
-            var explanation = (typeof task.explanation === "function") ? "No explanation provided" : task.explanation;
-            var suggestion = (typeof task.suggestion === "function") ? "No suggestion provided" : task.suggestion;
-            newCard.find(".explanation").html(explanation);
-            newCard.find(".suggestion").html(suggestion);
-            
-            $(".mainCont").append(newCard);
-            fs.writeFileSync(optimizrReport, $.html());
+
         }
+
+        if (task.taskResultObj.status === "Succeeded") {
+            newCard.css("border-left-color", 'green');
+        }
+
+        var explanation = (typeof task.explanation === "function") ? "No explanation provided" : task.explanation;
+        var suggestion = (typeof task.suggestion === "function") ? "No suggestion provided" : task.suggestion;
+        newCard.find(".explanation").html(explanation);
+        newCard.find(".suggestion").html(suggestion);
+
+        $(".mainCont").append(newCard);
+        
     }
+
+    fs.writeFileSync(optimizrReport, $.html());
 }
 
 optimizr.prototype.expand = function (pattern, options) {
@@ -119,12 +125,12 @@ optimizr.prototype.expand = function (pattern, options) {
     return files;
 }
 
-optimizr.prototype.getTasks = function() {
-    
+optimizr.prototype.getTasks = function () {
+
     var files = glob.sync("tasks/*.js");
 
-    for(var i = 0 ; i < files.length; i++) {
-        var task = require("./" +files[i]).task;
+    for (var i = 0 ; i < files.length; i++) {
+        var task = require("./" + files[i]).task;
         optimizr.registerTask(task);
     }
 }
@@ -151,4 +157,3 @@ exports.optimizr = optimizr;
 
 optimizr.getTasks();
 optimizr.run();
-

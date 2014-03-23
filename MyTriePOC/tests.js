@@ -33,6 +33,16 @@ describe('Adding to tries', function(){
                 .add("MyFirstTrie")
                 .add("MySecondTrie");
         });
+        
+        it('should not allow duplicate values(on the same level) if specified', function() {
+            var count = trie.count;
+            assert.equal(trie.add("number", 20, false).count, count);
+        });
+        
+        it('should allow duplicate values(on different levels) even if specified', function() {
+            var count = trie.count;
+            assert.equal(trie.add("numberB", 20, false).count, count + 1);
+        });
     });
     
     describe('Retrieving values', function(){
@@ -66,7 +76,7 @@ describe('Adding to tries', function(){
         });
     });
     
-    describe('Reomving values', function(){
+    describe('Removing values', function(){
         it('should wipe the trie properly', function(){
             trie.wipe();
             assert.equal(0, trie.count);

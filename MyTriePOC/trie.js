@@ -75,11 +75,13 @@ function uniqueHashType(word, item) {
 //    }
 }
 
-Trie.prototype.lookup = function(word) {
+Trie.prototype.lookup = function(word, max, duplicatesAllowed) {
     var results = [];
     if(word === undefined || word === null || word === "")
         return results;
 
+    max = max || 10;
+    
     var lword = word.toLowerCase();
     var current = this.trie;
     for(var a = 0; a < lword.length; a++) {
@@ -88,7 +90,23 @@ Trie.prototype.lookup = function(word) {
         current = current[lword[a]];
     }
 
-    getAllLeaves(current, results);
+    var tempTrieHash = {
+    };
+    
+    getAllLeaves(current, results, {
+        'max' : max,
+        'duplicatesAllowed' : duplicatesAllowed,
+        'hashCheck' : function(result) {
+            var hash = uniqueHashType(lword, result);
+            
+            if(tempTrieHash[hash] !== undefined)
+                return false;
+            else {
+                tempTrieHash[hash] = '';
+                return true;
+            }
+        }
+    });
 
     return results;
 }
@@ -97,31 +115,41 @@ Trie.prototype.top = function(max) {
     var results = [];
     max = max || 10;
 
-    getAllLeaves(this.trie, results, max);
+    getAllLeaves(this.trie, results, {'max' : max});
 
     return results;
 }
 
-function getAllLeaves(node, results, max) {
+function getAllLeaves(node, results, opts) {
 
+    var max = opts.max;
+    
     if(max !== undefined && results.length >= max)
         return;
 
     for(var a in node) {
         if(node.hasOwnProperty(a)) {
             if(a === LEAFIND)
-                flattenAndPush(node[a], results, max);
+                flattenAndPush(node[a], results, opts);
             else
-                getAllLeaves(node[a], results, max);
+                getAllLeaves(node[a], results, opts);
         }
     }
 }
 
-function flattenAndPush(arr, results, max) {
+function flattenAndPush(arr, results, opts) {
+    
+    var max = opts.max;
+    var duplicatesAllowed = opts.duplicatesAllowed === false ? false : true;
     var arrlength = arr.length;
+    
     for(var i = 0; i < arrlength; i++) {
         if(max !== undefined && results.length >= max)
             return;
+        
+        if(!duplicatesAllowed && !opts.hashCheck(arr[i]))
+            continue;
+        
         results.push(arr[i]);
     }
 }

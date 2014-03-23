@@ -5,7 +5,7 @@ var assert = require("assert");
 var Trie = require("./trie.js").Trie;
 var trie;
 
-describe('Adding to tries', function(){
+describe('Trie tests:', function(){
     before(function(){
         trie = new Trie();
     });
@@ -73,6 +73,15 @@ describe('Adding to tries', function(){
             assert.equal(2, trie.top(2).length);
             assert.equal(trie.count, trie.top(trie.count).length);
             assert.equal(trie.count, trie.top(trie.count+2).length);
+        });
+        
+        it('should retrieve duplicates', function() {
+            assert.equal(trie.lookup('number').length, 2);
+        });
+        
+        it('should not retrieve duplicates', function() {
+            assert.equal(trie.lookup('number', undefined, false).length, 1);
+            assert.equal(trie.lookup('number', undefined, false)[0], 20);
         });
     });
     

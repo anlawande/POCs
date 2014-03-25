@@ -12,9 +12,11 @@ var LEAFIND = "$";
 var crypto = require("crypto");
 var stringify_stable = require('json-stable-stringify');
 
-function Trie() {
+function Trie(opts) {
+    opts = opts || {};
     this.trie = {};
     this.count = 0;
+    this.max = opts.max;            // if max(for lookup only) specified else undefined treated as no max
     this.trieInternalHash = {
     };
 }
@@ -75,12 +77,12 @@ function uniqueHashType(word, item) {
 //    }
 }
 
-Trie.prototype.lookup = function(word, max, duplicatesAllowed) {
+Trie.prototype.lookup = function(word, duplicatesAllowed, max) {
     var results = [];
     if(word === undefined || word === null || word === "")
         return results;
 
-    max = max || 10;
+    max = max || this.max;
     
     var lword = word.toLowerCase();
     var current = this.trie;
@@ -113,7 +115,7 @@ Trie.prototype.lookup = function(word, max, duplicatesAllowed) {
 
 Trie.prototype.top = function(max) {
     var results = [];
-    max = max || 10;
+    max = max || opts.max;
 
     getAllLeaves(this.trie, results, {'max' : max});
 

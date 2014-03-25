@@ -34,6 +34,14 @@ describe('Trie tests:', function(){
                 .add("MySecondTrie");
         });
         
+        it('should allow duplicates at same level (specified or default)', function() {
+            trie.add("myobj", {"cust" : 40}, true);
+            assert.equal(trie.lookup("myobj").length, 2);
+            assert.equal(trie.lookup("myobj")[0]["cust"], trie.lookup("myobj")[1]["cust"]);
+            trie.add("myobj", {"cust" : 40});
+            assert.equal(trie.lookup("myobj").length, 3);
+        });
+        
         it('should not allow duplicate values(on the same level) if specified', function() {
             var count = trie.count;
             assert.equal(trie.add("number", 20, false).count, count);
@@ -76,12 +84,21 @@ describe('Trie tests:', function(){
         });
         
         it('should retrieve duplicates', function() {
-            assert.equal(trie.lookup('number').length, 2);
+            trie.add("number", 20);
+            assert.equal(trie.lookup('number').length, 3);
+            assert.equal(trie.lookup('numb').length, 3);
         });
         
-        it('should not retrieve duplicates', function() {
-            assert.equal(trie.lookup('number', undefined, false).length, 1);
-            assert.equal(trie.lookup('number', undefined, false)[0], 20);
+        it('should not retrieve duplicates at the same level', function() {
+            assert.equal(trie.lookup('number', false).length, 1);
+            assert.equal(trie.lookup('numb', false).length, 1);
+            assert.equal(trie.lookup('number', false)[0], 20);
+        });
+        
+        it('should not duplicates at different levels', function() {
+            assert.equal(trie.lookup('number', false).length, 1);
+            assert.equal(trie.lookup('numberB', false).length, 1);
+            assert.equal(trie.lookup('numberB', false)[0], 20);
         });
     });
     

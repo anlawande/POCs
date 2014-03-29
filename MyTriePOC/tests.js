@@ -77,10 +77,10 @@ describe('Trie tests:', function(){
         });
         
         it('should retrieve top n entries', function(){
-            assert.equal(5, trie.top(5).length);
-            assert.equal(2, trie.top(2).length);
-            assert.equal(trie.count, trie.top(trie.count).length);
-            assert.equal(trie.count, trie.top(trie.count+2).length);
+            assert.equal(5, trie.top({max : 5}).length);
+            assert.equal(2, trie.top({max : 2}).length);
+            assert.equal(trie.count, trie.top({max : trie.count}).length);
+            assert.equal(trie.count, trie.top({max : trie.count+2}).length);
         });
         
         it('should retrieve duplicates', function() {
@@ -99,6 +99,13 @@ describe('Trie tests:', function(){
             assert.equal(trie.lookup('number', false).length, 1);
             assert.equal(trie.lookup('numberB', false).length, 1);
             assert.equal(trie.lookup('numberB', false)[0], 20);
+        });
+        
+        it('should test opts arguments properly', function() {
+            assert.equal(trie.top().length, trie.count);
+            trie.max = 5;
+            assert.equal(trie.top().length, 5);
+            assert.equal(trie.lookup('numb', true, {max : 1}).length, 1);
         });
     });
     

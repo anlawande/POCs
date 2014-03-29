@@ -77,12 +77,12 @@ function uniqueHashType(word, item) {
 //    }
 }
 
-Trie.prototype.lookup = function(word, duplicatesAllowed, max) {
+Trie.prototype.lookup = function(word, duplicatesAllowed, opts) {
     var results = [];
     if(word === undefined || word === null || word === "")
         return results;
 
-    max = max || this.max;
+    max = opts !== undefined ? opts.max : this.max;
     
     var lword = word.toLowerCase();
     var current = this.trie;
@@ -113,9 +113,9 @@ Trie.prototype.lookup = function(word, duplicatesAllowed, max) {
     return results;
 }
 
-Trie.prototype.top = function(max) {
+Trie.prototype.top = function(opts) {
     var results = [];
-    max = max || opts.max;
+    max = opts !== undefined ? opts.max : this.max;
 
     getAllLeaves(this.trie, results, {'max' : max});
 

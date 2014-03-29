@@ -81,10 +81,20 @@ Trie.prototype.lookup = function(word, duplicatesAllowed, opts) {
     var results = [];
     if(word === undefined || word === null || word === "")
         return results;
-
-    max = opts !== undefined ? opts.max : this.max;
-    
     var lword = word.toLowerCase();
+
+    var max = opts !== undefined ? opts.max : this.max;
+    var prevResults = opts !== undefined ? opts.prevResults : undefined;
+    
+    if(prevResults) {
+        var tempPrevHash = {};
+        for(var i = 0; i < prevResults.length; i++) {
+            var hash = uniqueHashType(lword, prevResults[i]);
+            tempPrevHash[hash] = "";
+        }
+        prevResults = tempPrevHash;
+    }
+    
     var current = this.trie;
     for(var a = 0; a < lword.length; a++) {
         if(current[lword[a]] === undefined)
@@ -92,8 +102,7 @@ Trie.prototype.lookup = function(word, duplicatesAllowed, opts) {
         current = current[lword[a]];
     }
 
-    var tempTrieHash = {
-    };
+    var tempTrieHash = {};
     
     getAllLeaves(current, results, {
         'max' : max,
@@ -101,6 +110,11 @@ Trie.prototype.lookup = function(word, duplicatesAllowed, opts) {
         'hashCheck' : function(result) {
             var hash = uniqueHashType(lword, result);
             
+            // If same item is not in prevResults, don't add it
+            if(prevResults && prevResults[hash] === undefined)
+                return false;
+                
+            // If duplicate object, don't add it
             if(tempTrieHash[hash] !== undefined)
                 return false;
             else {

@@ -2,12 +2,16 @@ var express = require('express');
 var fs = require("fs");
 var app = express();
 var request = require("request");
+var session = require("express-session");
+var cookieParser = require("cookie-parser");
 var EventEmitter = require("events").EventEmitter;
 var emitter = new EventEmitter();
 var port = 3000;
 
-app.use(express.cookieParser());
-app.use(express.session({secret: '1234567890QWERTY'}));
+app.use(cookieParser());
+app.use(session({secret: '1234567890QWERTY',
+                resave: true,
+                saveUninitialized: true}));
 
 var sessionMap = {};
 
